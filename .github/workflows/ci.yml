@@ -54,6 +54,7 @@ jobs:
       run: |
         go get github.com/golang/mock/mockgen
         go get github.com/golang/mock/gomock
+        ls ${GOPATH}/bin
         sudo cp ${HOME}/go/bin/mockgen /usr/bin
         make mock
 
