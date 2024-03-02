@@ -52,7 +52,8 @@ jobs:
 
     - name: Run mockgen
       run: |
-        go get github.com/golang/mock/gomock && go get github.com/golang/mock/mockgen
+        go get github.com/golang/mock/mockgen
+        go get github.com/golang/mock/gomock
         sudo cp ${HOME}/go/bin/mockgen /usr/bin
         make mock
 
