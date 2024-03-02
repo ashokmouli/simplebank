@@ -53,7 +53,7 @@ jobs:
     - name: Run mockgen
       run: |
         go get github.com/golang/mock/gomock && go get github.com/golang/mock/mockgen
-        echo ${HOME}/go/bin >> $GITHUB_PATH
+        sudo cp ${HOME}/go/bin/mockgen /usr/bin
         make mock
 
     - name: Download migrate
