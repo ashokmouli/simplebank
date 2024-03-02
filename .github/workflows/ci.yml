@@ -51,7 +51,10 @@ jobs:
       run: make sqlc
 
     - name: Run mockgen
-      run: make mock
+      run: |
+        go get github.com/golang/mock/gomock
+        go get github.com/golang/mock/mockgen
+        make mock
 
     - name: Download migrate
       run: |
