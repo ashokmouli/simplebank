@@ -9,8 +9,10 @@ import (
 )
 
 func TestCreateAccount(t *testing.T) {
+	user := makeUser()
+
 	args := CreateAccountParams{
-		Owner:    util.RandomOwner(),
+		Owner:    user.Username,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
@@ -29,8 +31,10 @@ func TestCreateAccount(t *testing.T) {
 }
 
 func makeAccount() Account {
+
+	user := makeUser()
 	args := CreateAccountParams{
-		Owner:    util.RandomOwner(),
+		Owner:    user.Username,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
 	}
@@ -59,14 +63,22 @@ func TestListAccounts(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		test_accounts[i] = makeAccount()
 	}
+
+	lastAccount := test_accounts[9]
 	args := ListAccountsParams{
-		Limit:  3,
+		Owner: lastAccount.Owner,
+		Limit:  5,
 		Offset: 0,
 	}
 	// Call List Account
 	accounts, err := testQueries.ListAccounts(context.Background(), args)
 	require.NoError(t, err)
-	require.Equal(t, len(accounts), 3)
+	require.NotEqual(t, len(accounts), 0)
+	for i := range(accounts) {
+		require.Equal(t, accounts[i].Owner, lastAccount.Owner)
+
+	}
+
 
 	/*
 		 Not clear how to check the values returned in the test_accounts, since it will return the first n accounts, unless

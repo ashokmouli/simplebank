@@ -3,6 +3,7 @@ package util
 import (
 	"math/rand"
 	"strings"
+	"fmt"
 )
 
 func RandomInt(min, max int64) int64 {
@@ -14,7 +15,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyz"
 func RandomString(n int) string {
 	var sb strings.Builder
 	k := len(alphabet)
-	for i := 0; i < k; i++ {
+	for i := 0; i < n; i++ {
 		ch := alphabet[rand.Intn(k)]
 		sb.WriteByte(ch)
 	}
@@ -31,7 +32,11 @@ func RandomMoney() int64 {
 
 func RandomCurrency() string {
 
-	currency := []string{"usd", "eur", "cad"}
+	currency := []string{"USD", "EUR", "CAD"}
 	k := len(currency)
-	return currency[rand.Intn(k)]
+	return currency[rand.Intn(k)]	
+}
+
+func RandomEmail() string {
+	return fmt.Sprintf("%s@email.com", RandomString(6))
 }

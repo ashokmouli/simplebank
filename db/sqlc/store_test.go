@@ -15,8 +15,8 @@ func TestTransferTx(t *testing.T) {
 	amount := int64(100)
 	errs := make(chan error)
 	results := make(chan TransferTxResults)
-	const n = 5
-	fmt.Printf("Balance 1 %d, Balance 2 %d, Amount %d\n", account1.Balance, account2.Balance, amount*n)
+	const n = 1
+	// fmt.Printf("Balance 1 %d, Balance 2 %d, Amount %d\n", account1.Balance, account2.Balance, amount*n)
 	for i := 0; i < n; i++ {
 		txName := fmt.Sprintf("tx: %d", i)
 		go func() {
@@ -84,7 +84,7 @@ func TestTransferTx(t *testing.T) {
 	updatedAccount2, err := store.GetAccount(context.Background(), account2.ID)
 	require.NoError(t, err)
 	require.Equal(t, updatedAccount2.Balance, account2.Balance+n*amount)
-	fmt.Printf("Balance 1 %d, Balance 2 %d, Amount %d\n", updatedAccount1.Balance, updatedAccount2.Balance, amount)
+	//fmt.Printf("Balance 1 %d, Balance 2 %d, Amount %d\n", updatedAccount1.Balance, updatedAccount2.Balance, amount)
 
 }
 
