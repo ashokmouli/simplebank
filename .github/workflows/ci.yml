@@ -50,6 +50,9 @@ jobs:
     - name: Generate sqlc files
       run: make sqlc
 
+    - name: Run mockgen
+      run: make mock
+
     - name: Download migrate
       run: |
         curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
