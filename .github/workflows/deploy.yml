@@ -8,7 +8,7 @@ on:
 jobs:
 
   build:
-    name:  Build image
+    name:  Deploy image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,6 +25,15 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Download kubectl to runner
+        uses: azure/setup-kubectl@v3
+        with:
+         version: '1.29.1'
+        id: install
+
+      - name: Update kubeconfig so that it can access EKS cluster
+        run: aws eks update-kubeconfig --name simple-bank --region us-west-1
+
       - name: Update app.env by downloading the env settings from aws secretsmanager
         run: aws secretsmanager get-secret-value --secret-id simple_bank --query SecretString --output text  | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > app.env
         
@@ -34,5 +43,17 @@ jobs:
           REPOSITORY: simplebank
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG  -t $REGISTRY/$REPOSITORY:latest .
+          docker push  -a $REGISTRY/$REPOSITORY
+
+      - name: Deploy docker image to EKS cluster
+        run: |
+          kubectl apply -f eks.aws-auth.yaml
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+          kubectl apply -f issuer.yaml
+          kubectl apply -f ingress.yaml
+         
+
+ 
+     

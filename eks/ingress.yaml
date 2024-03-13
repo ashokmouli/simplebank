@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+spec:
+  controller: k8s.io/ingress-nginx
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simple-bank-api-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "simplebank.chillaxx.net"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: "/api(/|$)(.*)"
+        backend:
+          service:
+            name: simple-bank-api-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - simplebank.chillaxx.net
+    secretName: simple-bank-api-cert
+ 
