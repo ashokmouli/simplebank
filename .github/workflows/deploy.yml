@@ -28,7 +28,7 @@ jobs:
       - name: Download kubectl to runner
         uses: azure/setup-kubectl@v3
         with:
-         version: '1.29.1'
+         version: 'latest'
         id: install
 
       - name: Update kubeconfig so that it can access EKS cluster
