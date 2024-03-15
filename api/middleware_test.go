@@ -19,9 +19,10 @@ func addAuthHeader(
 	username string,
 	duration time.Duration) {
 
-	token, err := tokenMaker.CreateToken(username, duration)
+	token, payload, err := tokenMaker.CreateToken(username, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
+	require.NotEmpty(t, payload)
 	req.Header.Set("authorization", "bearer "+token)
 }
 func TestAuthMiddleware(t *testing.T) {
@@ -57,9 +58,10 @@ func TestAuthMiddleware(t *testing.T) {
 		{
 			name: "invalid auth type",
 			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
-				token, err := tokenMaker.CreateToken(username, duration)
+				token, payload, err := tokenMaker.CreateToken(username, duration)
 				require.NoError(t, err)
 				require.NotEmpty(t, token)
+				require.NotEmpty(t, payload)
 				// Basic auth shouldn't go through.
 				req.Header.Set("authorization", "basic "+token)
 			},
@@ -70,9 +72,10 @@ func TestAuthMiddleware(t *testing.T) {
 		{
 			name: "Expired token",
 			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
-				token, err := tokenMaker.CreateToken(username, -time.Minute)
+				token, payload, err := tokenMaker.CreateToken(username, -time.Minute)
 				require.NoError(t, err)
 				require.NotEmpty(t, token)
+				require.NotEmpty(t, payload)
 				req.Header.Set("authorization", "bearer "+token)
 			},
 			checkResponse: func(t *testing.T, resp *httptest.ResponseRecorder) {
