@@ -59,15 +59,15 @@ func (c RegClaims) GetSubject() (string, error) {
 	return "none", nil
 }
 
-func (j *JWTMaker) CreateToken(username string, duration time.Duration) (string, error) {
+func (j *JWTMaker) CreateToken(username string, duration time.Duration) (string, *Payload, error) {
 	payload, err := NewPayload(username, duration)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, RegClaims{Payload: *payload})
 	token, err := jwtToken.SignedString([]byte(j.secretKey))
-	return token, err
+	return token, payload, err
 
 }
 func (j *JWTMaker) VerifyToken(token string) (*Payload, error) {

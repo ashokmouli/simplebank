@@ -34,7 +34,7 @@ func randomUser(t *testing.T) (db.User, string) {
 
 // This struct is used to provide a Custom Matcher interface
 type eqCreateUserParamsMatcher struct {
-	expected       db.CreateUserParams
+	expected         db.CreateUserParams
 	expectedPassword string
 }
 
@@ -59,7 +59,7 @@ func (e eqCreateUserParamsMatcher) String() string {
 
 func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher {
 	return eqCreateUserParamsMatcher{
-		expected:       arg,
+		expected:         arg,
 		expectedPassword: password,
 	}
 }
@@ -160,6 +160,7 @@ func TestLoginUser(t *testing.T) {
 			},
 			buildStore: func(t *testing.T, mock *mockdb.MockStore) {
 				mock.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.Username)).Return(user, nil).Times(1)
+				mock.EXPECT().CreateSession(gomock.Any(), gomock.Any()).Times(1)
 			},
 			matchResult: func(t *testing.T, resp *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, resp.Code)
@@ -217,8 +218,6 @@ func TestLoginUser(t *testing.T) {
 
 }
 
-
-
 func matchReturnedUser(t *testing.T, buffer *bytes.Buffer, user *db.User) {
 
 	data, err := io.ReadAll(buffer)
@@ -239,7 +238,7 @@ func matchReturnedLogin(t *testing.T, buffer *bytes.Buffer, user *db.User) {
 	var got createLoginResponse
 	err = json.Unmarshal(data, &got)
 	require.NoError(t, err)
-	require.NotEmpty(t, got.Token)
+	require.NotEmpty(t, got.AccessToken)
 	require.Equal(t, got.User.Username, user.Username)
 	require.Equal(t, got.User.FullName, user.FullName)
 	require.Equal(t, got.User.Email, user.Email)
