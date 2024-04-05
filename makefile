@@ -27,11 +27,21 @@ sqlc:
 server:
 	go run main.go
 
+evans:
+	evans --path proto --proto service_simple_bank.proto --host localhost --port 9090 repl
+
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/ashokmouli/simplebank/db/sqlc Store
+
+proto:
+	rm -rf proto/*.go
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+		--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+		--grpc-gateway_out=pb --grpc-gateway_opt paths=source_relative \
+		proto/*.proto
 
 tests: 
 	go test -v -cover ./...
 	
-.PHONY: postgres createdb dropdb migrateup migrateup1 migratedown migratedown1 sqlc server mock tests
+.PHONY: postgres createdb dropdb migrateup migrateup1 migratedown migratedown1 sqlc server mock proto tests evans
 
