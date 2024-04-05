@@ -63,5 +63,26 @@ jobs:
     - name: Run migration
       run: make migrateup
 
+    - name: Install protoc
+      run: |
+        echo "*** unzipping protoc"
+        curl -L --output protoc-26.1-linux-x86_64.zip https://github.com/protocolbuffers/protobuf/releases/download/v26.1/protoc-26.1-linux-x86_64.zip
+        unzip protoc-26.1-linux-x86_64.zip 
+        echo "*** moving bin/protoc /usr/bin"
+        sudo mv bin/protoc /usr/bin
+        echo "*** moving proto files to /usr/include"
+        sudo mv include/google /usr/include
+
+    - name: Install go protoc and grpc plugins
+      run: | 
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+        go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+        go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+
+    - name: Generate go files from protobuf specs.
+      run: |
+        make proto
+
     - name: Test
       run: make tests
