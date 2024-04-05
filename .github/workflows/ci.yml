@@ -73,14 +73,14 @@ jobs:
     - name: Install go protoc and grpc plugins
       run: > 
         go install
-          github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-          github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-          google.golang.org/protobuf/cmd/protoc-gen-go
-          google.golang.org/grpc/cmd/protoc-gen-go-grpc
+        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+        google.golang.org/protobuf/cmd/protoc-gen-go
+        google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
     - name: Generate go files from protobuf specs.
       run: |
         make proto
-        
+
     - name: Test
       run: make tests
