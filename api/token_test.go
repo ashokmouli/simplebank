@@ -94,6 +94,38 @@ func TestRenewTokenAPI(t *testing.T) {
 				require.Equal(t, http.StatusForbidden, resp.Code)
 			},
 		},
+		{
+			name: "Forbidden -- Blocked",
+			
+			createToken: func(t *testing.T, tokenMaker token.Maker) (string, *token.Payload) {
+				token, payload, err := tokenMaker.CreateToken(username, time.Hour)
+				require.NoError(t, err)
+				require.NotEmpty(t, payload)
+				return token, payload
+			},
+		
+			buildStore: func(t *testing.T, store *mockdb.MockStore, maker token.Maker, token1 string, payload *token.Payload) {
+
+				// Create a different session object and return it to the handler to test error conditions.
+				username := util.RandomOwner()
+				token2, payload2, err := maker.CreateToken(username, time.Hour)
+				require.NoError(t, err)
+				require.NotEmpty(t, payload2)
+
+				session := db.Session {
+					ID: payload.ID,
+					Username: payload2.Username,
+					IsBlocked: true,
+					RefreshToken: token2,
+					ExpiresAt: payload2.ExpiredAt,
+					CreatedAt: time.Now(),
+				}
+				store.EXPECT().GetSession(gomock.Any(), gomock.Eq(payload.ID)).Return(session, nil).Times(1)
+			},
+			matchResult: func(t *testing.T, resp *httptest.ResponseRecorder, maker token.Maker, payload *token.Payload) {
+				require.Equal(t, http.StatusForbidden, resp.Code)
+			},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
