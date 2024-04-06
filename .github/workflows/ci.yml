@@ -71,7 +71,8 @@ jobs:
         echo "*** moving bin/protoc /usr/bin"
         sudo mv bin/protoc /usr/bin
         echo "*** moving proto files to /usr/include"
-        sudo mv include/*.proto /usr/include
+        sudo mkdir -p /usr/include/google/protobuf
+        sudo mv include/*.proto /usr/include/google/protobuf
 
     - name: Install go protoc and grpc plugins
       run: | 
